@@ -6,6 +6,11 @@ import 'firebase/storage';
 import styles from './Auth.module.css';
 import { updateUserProfile } from '../features/userSlice';
 import { auth, provider, storage } from '../firebase';
+import Radio from '@material-ui/core/Radio';
+import RadioGroup from '@material-ui/core/RadioGroup';
+import FormControlLabel from '@material-ui/core/FormControlLabel';
+import FormControl from '@material-ui/core/FormControl';
+import FormLabel from '@material-ui/core/FormLabel';
 
 import {
   Avatar,
@@ -92,6 +97,8 @@ const Auth: React.FC = () => {
   const [isLogin, setIsLogin] = useState(true);
   const [openModal,setOpenModal] = React.useState(false);
   const [resetEmail,setResetEmail] = useState("");
+  const [value, setValue] = React.useState('female');
+
   
   const onChangeImageHandler = (e: React.ChangeEvent<HTMLInputElement>) => {
     if (e.target.files![0]) {
@@ -145,6 +152,13 @@ const Auth: React.FC = () => {
     )
   }
 
+
+  
+  const handleChange = (event: React.ChangeEvent<HTMLInputElement>) => {
+    setValue((event.target as HTMLInputElement).value);
+  }
+  
+
   const signInGoogle = async () => {
     await auth.signInWithPopup(provider).catch((err) => alert(err.message));
   };
@@ -167,22 +181,23 @@ const Auth: React.FC = () => {
             {isLogin ? "Login" : "Register"}
           </Typography>
         <form className={classes.form} noValidate >
-          {!isLogin && (<>
-            <TextField
-          variant="outlined"
-          margin="normal"
-          required
-          fullWidth
-          id="username"
-          label="Username"
-          name="username"
-          autoComplete="username"
-          autoFocus
-          value={username}
-          onChange={(e: React.ChangeEvent<HTMLInputElement>) => {
-            setUsername(e.target.value)
-          }}
-        />
+          {!isLogin && (
+        <>
+          <TextField
+            variant="outlined"
+            margin="normal"
+            required
+            fullWidth
+            id="username"
+            label="Username"
+            name="username"
+            autoComplete="username"
+            autoFocus
+            value={username}
+            onChange={(e: React.ChangeEvent<HTMLInputElement>) => {
+              setUsername(e.target.value)
+            }}
+          />
           <Box textAlign="center">
             <IconButton>
               <label>
@@ -202,8 +217,32 @@ const Auth: React.FC = () => {
               </label>
             </IconButton>
           </Box>
-          </>)}
+          <Grid container spacing={2}>
+            <Grid item xs={9}>
+              <TextField
+                id="date"
+                label="生年月日"
+                type="date"
+                defaultValue="2000-01-01"
+                InputLabelProps={{
+                  shrink: true,
+                }}
+              />
+            </Grid>
+            <Grid item xs={4}>
+            <FormControl component="fieldset">
+            <FormLabel component="legend">性別</FormLabel>
+              <RadioGroup aria-label="gender" name="gender1" value={value} onChange={handleChange}>
+                <FormControlLabel value="female" control={<Radio />} label="Female" />
+                <FormControlLabel value="male" control={<Radio />} label="Male" />
+              </RadioGroup>
+            </FormControl>
+            </Grid>
+          </Grid>
+        </>
+      )}
 
+        
         <TextField
           variant="outlined"
           margin="normal"
@@ -243,7 +282,12 @@ const Auth: React.FC = () => {
         }
           fullWidth
           variant="contained"
-          color="default"
+          color="primary"
+          style={{
+            marginTop:"10px",
+            marginBottom: "10px"
+          }}
+          
           // className={classes.submit}
           onClick={
             isLogin
@@ -265,22 +309,9 @@ const Auth: React.FC = () => {
         >
           {isLogin ? "Login" : "Register"}
         </Button>
-        <Grid container>
-          <Grid item xs>
-            <span 
-              className={styles.login_toggleMode}
-              onClick={() => setOpenModal(true)}
-            >パスワードをお忘れですか？</span>
-          </Grid>
-          <Grid item>
-            <span 
-                className={styles.login_toggleMode}
-                onClick={() => setIsLogin(!isLogin)}>
-              {isLogin ? "アカウントを新規登録しますか？" : "ログイン画面に戻る"}
-            </span>
-          </Grid>
-        </Grid>
+
         <Button
+          color="primary"
           fullWidth
           variant="contained"
           onClick={signInGoogle}
@@ -312,8 +343,24 @@ const Auth: React.FC = () => {
             </div>
           </Modal>
         </div>
+        <Grid container>
+          <Grid item xs>
+            <span 
+              className={styles.login_toggleMode}
+              onClick={() => setOpenModal(true)}
+            >パスワードをお忘れですか？</span>
+          </Grid>
+          <Grid item>
+            <span 
+                className={styles.login_toggleMode}
+                onClick={() => setIsLogin(!isLogin)}>
+              {isLogin ? "アカウントを新規登録しますか？" : "ログイン画面に戻る"}
+            </span>
+          </Grid>
+        </Grid>
       </Grid>
     </Grid>
+    
   );
 };
 
