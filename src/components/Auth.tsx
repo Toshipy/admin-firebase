@@ -1,5 +1,7 @@
 import React, { useState } from 'react'
 import { useDispatch } from 'react-redux';
+// import handleChangeTerms from './Checkbox';
+
 import 'firebase/auth';
 import 'firebase/firestore';
 import 'firebase/storage';
@@ -10,10 +12,13 @@ import Radio from '@material-ui/core/Radio';
 import RadioGroup from '@material-ui/core/RadioGroup';
 import FormControlLabel from '@material-ui/core/FormControlLabel';
 import FormControl from '@material-ui/core/FormControl';
+import FormGroup from "@material-ui/core/FormGroup";
 import FormLabel from '@material-ui/core/FormLabel';
+import Checkbox from "@material-ui/core/Checkbox";
+import Link from "@material-ui/core/Link";
+
 
 import {
-  Avatar,
   Button,
   CssBaseline,
   TextField,
@@ -31,6 +36,7 @@ import SendIcon from "@material-ui/icons/Send";
 // import EmailIcon from "@material-ui/icons/Email";
 // import LockOutlinedIcon from "@material-ui/icons/LockOutlined";
 import AccountCircleIcon from "@material-ui/icons/AccountCircle";
+
 
 function getModalStyle() {
   const top = 50;
@@ -159,9 +165,9 @@ const Auth: React.FC = () => {
   }
   
 
-  const signInGoogle = async () => {
-    await auth.signInWithPopup(provider).catch((err) => alert(err.message));
-  };
+  // const signInGoogle = async () => {
+  //   await auth.signInWithPopup(provider).catch((err) => alert(err.message));
+  // };
 
   // console.log(firebaseConfig.authDomain);
 
@@ -239,6 +245,10 @@ const Auth: React.FC = () => {
             </FormControl>
             </Grid>
           </Grid>
+          <FormGroup>
+            <FormControlLabel control={<Checkbox defaultChecked />} label="規約に同意する"  />
+            <Link href="https://menherasenpai.notion.site/457df49475494671807673a0a3346451">利用規約</Link>
+          </FormGroup>
         </>
       )}
 
@@ -309,15 +319,14 @@ const Auth: React.FC = () => {
         >
           {isLogin ? "ログイン" : "新規登録"}
         </Button>
-
-        <Button
+        {/* <Button
           color="primary"
           fullWidth
           variant="contained"
           onClick={signInGoogle}
         >
           Googleでサインインする
-          </Button>
+          </Button> */}
         </form>
       
       
