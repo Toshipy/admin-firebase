@@ -178,7 +178,7 @@ const Auth: React.FC = () => {
             <LockOutlinedIcon />
           </Avatar> */}
           <Typography component="h1" variant="h5">
-            {isLogin ? "Login" : "Register"}
+            {isLogin ? "ログイン" : "新規登録"}
           </Typography>
         <form className={classes.form} noValidate >
           {!isLogin && (
@@ -189,7 +189,7 @@ const Auth: React.FC = () => {
             required
             fullWidth
             id="username"
-            label="Username"
+            label="ユーザーネーム"
             name="username"
             autoComplete="username"
             autoFocus
@@ -233,8 +233,8 @@ const Auth: React.FC = () => {
             <FormControl component="fieldset">
             <FormLabel component="legend">性別</FormLabel>
               <RadioGroup aria-label="gender" name="gender1" value={value} onChange={handleChange}>
-                <FormControlLabel value="female" control={<Radio />} label="Female" />
-                <FormControlLabel value="male" control={<Radio />} label="Male" />
+                <FormControlLabel value="female" control={<Radio />} label="女性" />
+                <FormControlLabel value="male" control={<Radio />} label="男性" />
               </RadioGroup>
             </FormControl>
             </Grid>
@@ -249,7 +249,7 @@ const Auth: React.FC = () => {
           required
           fullWidth
           id="email"
-          label="Email Address"
+          label="Eメールアドレス"
           name="email"
           autoComplete="email"
           autoFocus
@@ -265,7 +265,7 @@ const Auth: React.FC = () => {
           fullWidth
           id="password"
           type="password"
-          label="pawssword"
+          label="パスワード"
           name="password"
           autoComplete="password"
           autoFocus
@@ -307,7 +307,7 @@ const Auth: React.FC = () => {
               }
           }
         >
-          {isLogin ? "Login" : "Register"}
+          {isLogin ? "ログイン" : "新規登録"}
         </Button>
 
         <Button
@@ -316,7 +316,7 @@ const Auth: React.FC = () => {
           variant="contained"
           onClick={signInGoogle}
         >
-          Sign-in with Google
+          Googleでサインインする
           </Button>
         </form>
       
