@@ -5,7 +5,12 @@ import 'firebase/firestore';
 import 'firebase/storage';
 import styles from './Auth.module.css';
 import { updateUserProfile } from '../features/userSlice';
-import { auth, provider, firebaseConfig, storage } from '../firebase';
+import { auth, provider, storage } from '../firebase';
+import Radio from '@material-ui/core/Radio';
+import RadioGroup from '@material-ui/core/RadioGroup';
+import FormControlLabel from '@material-ui/core/FormControlLabel';
+import FormControl from '@material-ui/core/FormControl';
+import FormLabel from '@material-ui/core/FormLabel';
 
 import {
   Avatar,
@@ -22,10 +27,21 @@ import {
 } from "@material-ui/core";
 
 import SendIcon from "@material-ui/icons/Send";
-import CameraIcon from "@material-ui/icons/Camera";
-import EmailIcon from "@material-ui/icons/Email";
-import LockOutlinedIcon from "@material-ui/icons/LockOutlined";
+// import CameraIcon from "@material-ui/icons/Camera";
+// import EmailIcon from "@material-ui/icons/Email";
+// import LockOutlinedIcon from "@material-ui/icons/LockOutlined";
 import AccountCircleIcon from "@material-ui/icons/AccountCircle";
+
+function getModalStyle() {
+  const top = 50;
+  const left = 50;
+
+  return {
+    top: `${top}%`,
+    left: `${left}%`,
+    transform: `translate(-${top}%, -${left}%)`,
+  }
+}
 
 const useStyles = makeStyles((theme) => ({
   root: {
@@ -70,17 +86,6 @@ const useStyles = makeStyles((theme) => ({
   },
 }));
 
-function getModalStyle() {
-  const top = 50;
-  const left = 50;
-
-  return {
-    top: `${top}%`,
-    left: `${left}%`,
-    transform: `translate(-${top}%, -${left}%)`,
-  };
-}
-
 const Auth: React.FC = () => {
   const classes = useStyles();
 
@@ -90,12 +95,29 @@ const Auth: React.FC = () => {
   const [avatarImage, setAvatarImage] = useState<File | null>(null);
   const [password,setPassword] = useState("");
   const [isLogin, setIsLogin] = useState(true);
+  const [openModal,setOpenModal] = React.useState(false);
+  const [resetEmail,setResetEmail] = useState("");
+  const [value, setValue] = React.useState('female');
+
   
   const onChangeImageHandler = (e: React.ChangeEvent<HTMLInputElement>) => {
     if (e.target.files![0]) {
       setAvatarImage(e.target.files![0]);
       e.target.value="";
     }
+  };
+
+  const sendResetEmail = async (e: React.MouseEvent<HTMLElement>) => {
+    await auth
+    .sendPasswordResetEmail(resetEmail)
+    .then(() => {
+      setOpenModal(false);
+      setResetEmail("");
+    })
+    .catch((err) => {
+      alert(err.message);
+      setResetEmail("");
+    });
   };
 
   const signInEmail = async () => {
@@ -130,6 +152,13 @@ const Auth: React.FC = () => {
     )
   }
 
+
+  
+  const handleChange = (event: React.ChangeEvent<HTMLInputElement>) => {
+    setValue((event.target as HTMLInputElement).value);
+  }
+  
+
   const signInGoogle = async () => {
     await auth.signInWithPopup(provider).catch((err) => alert(err.message));
   };
@@ -149,26 +178,26 @@ const Auth: React.FC = () => {
             <LockOutlinedIcon />
           </Avatar> */}
           <Typography component="h1" variant="h5">
-            {isLogin ? "Login" : "Register"}
+            {isLogin ? "ログイン" : "新規登録"}
           </Typography>
-        <form className={classes.form} noValidate />
-
-          {!isLogin && (<>
-            <TextField
-          variant="outlined"
-          margin="normal"
-          required
-          fullWidth
-          id="username"
-          label="Username"
-          name="username"
-          autoComplete="username"
-          autoFocus
-          value={username}
-          onChange={(e: React.ChangeEvent<HTMLInputElement>) => {
-            setUsername(e.target.value)
-          }}
-        />
+        <form className={classes.form} noValidate >
+          {!isLogin && (
+        <>
+          <TextField
+            variant="outlined"
+            margin="normal"
+            required
+            fullWidth
+            id="username"
+            label="ユーザーネーム"
+            name="username"
+            autoComplete="username"
+            autoFocus
+            value={username}
+            onChange={(e: React.ChangeEvent<HTMLInputElement>) => {
+              setUsername(e.target.value)
+            }}
+          />
           <Box textAlign="center">
             <IconButton>
               <label>
@@ -188,15 +217,39 @@ const Auth: React.FC = () => {
               </label>
             </IconButton>
           </Box>
-          </>)}
+          <Grid container spacing={2}>
+            <Grid item xs={9}>
+              <TextField
+                id="date"
+                label="生年月日"
+                type="date"
+                defaultValue="2000-01-01"
+                InputLabelProps={{
+                  shrink: true,
+                }}
+              />
+            </Grid>
+            <Grid item xs={4}>
+            <FormControl component="fieldset">
+            <FormLabel component="legend">性別</FormLabel>
+              <RadioGroup aria-label="gender" name="gender1" value={value} onChange={handleChange}>
+                <FormControlLabel value="female" control={<Radio />} label="女性" />
+                <FormControlLabel value="male" control={<Radio />} label="男性" />
+              </RadioGroup>
+            </FormControl>
+            </Grid>
+          </Grid>
+        </>
+      )}
 
+        
         <TextField
           variant="outlined"
           margin="normal"
           required
           fullWidth
           id="email"
-          label="Email Address"
+          label="Eメールアドレス"
           name="email"
           autoComplete="email"
           autoFocus
@@ -212,7 +265,7 @@ const Auth: React.FC = () => {
           fullWidth
           id="password"
           type="password"
-          label="pawssword"
+          label="パスワード"
           name="password"
           autoComplete="password"
           autoFocus
@@ -229,7 +282,12 @@ const Auth: React.FC = () => {
         }
           fullWidth
           variant="contained"
-          color="default"
+          color="primary"
+          style={{
+            marginTop:"10px",
+            marginBottom: "10px"
+          }}
+          
           // className={classes.submit}
           onClick={
             isLogin
@@ -249,31 +307,61 @@ const Auth: React.FC = () => {
               }
           }
         >
-          {isLogin ? "Login" : "Register"}
+          {isLogin ? "ログイン" : "新規登録"}
         </Button>
-        <Grid container>
-        <Grid item xs>
-          <span className={styles.login_toggleMode}>パスワードをお忘れですか？</span>
-        </Grid>
-        <Grid item>
-          <span 
-              className={styles.login_toggleMode}
-              onClick={() => setIsLogin(!isLogin)}>
-            {isLogin ? "アカウントを新規登録しますか？" : "ログイン画面に戻る"}
-          </span>
-        </Grid>
-        </Grid>
+
         <Button
+          color="primary"
           fullWidth
           variant="contained"
           onClick={signInGoogle}
         >
-          Sign-in with Google
+          Googleでサインインする
           </Button>
-      </div>
+        </form>
+      
+      
+      <Modal open={openModal} onClose={() => setOpenModal(false)}>
+            <div style={getModalStyle()} className={classes.modal}>
+              <div className={styles.login_modal}>
+                <TextField
+                  InputLabelProps={{
+                    shrink: true,
+                  }}
+                  type="email"
+                  name="email"
+                  label="Reset E-mail"
+                  value={resetEmail}
+                  onChange={(e: React.ChangeEvent<HTMLInputElement>) => {
+                    setResetEmail(e.target.value);
+                  }}
+                />
+                <IconButton onClick={sendResetEmail}>
+                  <SendIcon />
+                </IconButton>
+              </div>
+            </div>
+          </Modal>
+        </div>
+        <Grid container>
+          <Grid item xs>
+            <span 
+              className={styles.login_toggleMode}
+              onClick={() => setOpenModal(true)}
+            >パスワードをお忘れですか？</span>
+          </Grid>
+          <Grid item>
+            <span 
+                className={styles.login_toggleMode}
+                onClick={() => setIsLogin(!isLogin)}>
+              {isLogin ? "アカウントを新規登録しますか？" : "ログイン画面に戻る"}
+            </span>
+          </Grid>
+        </Grid>
       </Grid>
     </Grid>
-  )
-}
+    
+  );
+};
 
 export default Auth
