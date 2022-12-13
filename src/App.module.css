@@ -1,4 +1,11 @@
-.App {
+.app {
+  display: flex;
+  height: 100vh;
+  padding: 30px 80px;
+  background-color: #444447;
+}
+
+/* .App {
   text-align: center;
 }
 
@@ -36,4 +43,4 @@
   100% {
     transform: translateY(0px);
   }
-}
+} */
